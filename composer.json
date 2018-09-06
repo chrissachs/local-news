@@ -9,6 +9,7 @@
         "enqueue/fs": "^0.8.24",
         "enqueue/laravel-queue": "^0.8.4",
         "fideloper/proxy": "^4.0",
+        "grimzy/laravel-mysql-spatial": "^2.1",
         "guzzlehttp/guzzle": "^6.3",
         "j0k3r/php-readability": "^1.1",
         "kevinrob/guzzle-cache-middleware": "^3.2",

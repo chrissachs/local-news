@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Events\PlaceEntered;
 use App\Location;
 use App\Service\CachingGuzzle;
+use Grimzy\LaravelMysqlSpatial\Types\Point;
 use function GuzzleHttp\Psr7\parse_query;
 use Psr\Log\LoggerInterface;
 
@@ -70,6 +71,10 @@ class GeoResolveWikipedia {
         $guzzle = new CachingGuzzle();
         $data = $guzzle->getJson($url);
         foreach($data['query']['pages'] ?? [] as $place) {
+            if(!isset($place['extlinks'])) {
+                continue;
+            }
+            // TODO: refactor
             foreach($place['extlinks'] as $link) {
                 $url = array_pop($link);
                 $parts = parse_url($url);
@@ -88,8 +93,7 @@ class GeoResolveWikipedia {
                     }
 
                     $location = new Location();
-                    $location->longitude = (float)$longitude;
-                    $location->latitude = (float)$latitude;
+                    $location->geo = new Point((float)$latitude, (float)$longitude);
                     $location->scale = (int)$scale;
                     return $location;
                 }

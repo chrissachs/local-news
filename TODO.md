@@ -1,15 +1,13 @@
 # TODO
-* api endpoint
-    * get articles
-        * sort by date
-        * filter by geo
-            * https://stackoverflow.com/questions/1006654/fastest-way-to-find-distance-between-two-lat-long-points
-            * http://daynebatten.com/2015/09/latitude-longitude-distance-sql/
+* api
+    * articles for entity?
+    * json middleware (json error for json response)
 * react frontend
     * google map component
     * hover desc, img, link 
-* admin tools
+* admin tools/commands
     * add/remove subscribed twitter accounts
+    * add new url
 * docker
     * clean production image
     * run queue on startup

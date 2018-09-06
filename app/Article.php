@@ -26,4 +26,8 @@ class Article extends Model
     public function source() {
         return $this->belongsTo(Source::class);
     }
+
+    public function articleEntities() {
+        return $this->hasMany(ArticleEntity::class);
+    }
 }

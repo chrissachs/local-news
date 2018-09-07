@@ -29,6 +29,7 @@ class ApiController extends Controller
         );
 
         $locations = $this->findCloseLocations($maxDistanceInMeters, $point);
+
         $entityIds = array_keys($locations);
         $entities = $this->findEntities($entityIds);
         $articles = $this->findArticlesWithEntities($entityIds);
@@ -37,9 +38,11 @@ class ApiController extends Controller
         foreach($articles as $article) {
             $data = [
                 'title' => $article->title,
+                'id' => $article->id,
                 'location' => [
                     'geo' => $locations[$article->entity_id]->geo,
                     'entity' => $this->serializeEntity($entities[$article->entity_id]),
+                    'confidence' => $article->confidence
                 ],
                 'source' => $article->source->toArray(),
                 'image' => $article->image,
@@ -56,13 +59,15 @@ class ApiController extends Controller
     /**
      * @param int   $maxDistanceInMeters
      * @param Point $point
+     * @param int   $maxScale
      *
      * @return Location[] with key entity_id
      */
-    private function findCloseLocations(int $maxDistanceInMeters, Point $point): array {
+    private function findCloseLocations(int $maxDistanceInMeters, Point $point, int $maxScale = 2000): array {
         /** @var Collection $locations */
         $locations = Location
             ::withinMetersOfPoint($maxDistanceInMeters, $point)
+            ->where('scale', '<=', $maxScale)
             ->get();
         return $this->indexBy($locations, 'entity_id');
     }
@@ -79,17 +84,19 @@ class ApiController extends Controller
 
     /**
      * @param array $entityIds
+     * @param int   $minConfidence minimum confidence the entity is relevant (0-100)
      *
      * @return Article[]|Collection
      */
-    private function findArticlesWithEntities(array $entityIds): Collection {
+    private function findArticlesWithEntities(array $entityIds, int $minConfidence = 80): Collection {
         /** @var Article[] $articles */
         return Article
             ::join('article_entities', 'article_entities.article_id', '=', 'articles.id')
             ->whereIn('entity_id', $entityIds)
+            ->where('confidence', '>=', $minConfidence)
             ->orderBy('articles.id', 'DESC')
             ->with('source')
-            ->select(['articles.*', 'article_entities.entity_id'])
+            ->select(['articles.*', 'article_entities.entity_id', 'article_entities.confidence'])
             ->get()
         ;
 

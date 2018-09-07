@@ -15,4 +15,5 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('test', 'WebController@test');
 Route::get('news/geo', 'ApiController@geoNews');

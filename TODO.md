@@ -4,6 +4,8 @@
     * json middleware (json error for json response)
 * react frontend
     * google map component
+        * https://github.com/google-map-react/google-map-react#readme
+        * http://google-map-react.github.io/google-map-react/map/main/
     * hover desc, img, link 
 * admin tools/commands
     * add/remove subscribed twitter accounts

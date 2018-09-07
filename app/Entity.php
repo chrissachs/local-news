@@ -30,6 +30,13 @@ class Entity extends Model
         );
     }
 
+    public function articles() {
+        return $this->hasManyThrough(
+                Article::class,
+                ArticleEntity::class
+        );
+    }
+
     public function location() {
         return $this->hasOne(Location::class);
     }

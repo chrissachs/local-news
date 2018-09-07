@@ -43,12 +43,17 @@ class ExtractEntities
         } else {
             $response = $this->dandelion->getEntitiesFromUrl($article->url);
         }
+        $addedIds = [];
         foreach($response as $row) {
-            // TODO: sometimes entities come twice, only enter once, "add" confidence?
             $floatConf = $row['confidence'] ?? 1;
             $confidence = (int)($floatConf * 100);
             /** @var Entity $entity */
             $entity = $row['entity'];
+            if(in_array($entity->id, $addedIds, true)) {
+                // sometimes entities get reported more than once, ignore duplicates...
+                continue;
+            }
+            $addedIds[] = $entity->id;
             $connection = new ArticleEntity();
             $connection->article_id = $event->getArticle()->id;
             $connection->entity_id = $entity->id;

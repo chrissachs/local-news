@@ -16,7 +16,12 @@ class ParseArticle
     /** @var LoggerInterface */
     private $logger;
 
-    private $reScan = false; // set to true for debugging existing articles
+    /**
+     * set to true for debugging existing articles
+     * @notice: will cause duplicate entries for entity connections
+     * @var bool
+     */
+    private $reScan = false;
 
 
     public function __construct(LoggerInterface $logger)
@@ -54,9 +59,21 @@ class ParseArticle
         )->id;
         $article->image = $this->extractArticleImage($parsedArticle);
         $article->url = $parsedArticle->getCanonicalLink();
-        $article->description = $parsedArticle->getOpenGraph()['description'] ?? null;
+        $article->description = $this->guessDescription($parsedArticle);
         $article->save();
         event(new ArticleParsed($article));
+    }
+
+    private function guessDescription(GooseArticle $article): string {
+        $ogData = $article->getOpenGraph();
+        if(isset($ogData['description'])) {
+            return $ogData['description'];
+        }
+        $text = $article->getCleanedArticleText();
+        if(!empty($text)) {
+            return str_before($text,'.');
+        }
+        return '';
     }
 
     private function doesArticleExist(string $url): bool {

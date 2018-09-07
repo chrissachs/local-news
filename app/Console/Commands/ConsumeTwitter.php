@@ -56,6 +56,7 @@ class ConsumeTwitter extends Command
             22152558, // bz
             19240255, // morgenpost
             19533595, // berlin_ticker/morgenpost
+            1620250698, // rbb25
         ];
         $stream = PublicStream::create(
             env('TWITTER_ACCESS_TOKEN'),

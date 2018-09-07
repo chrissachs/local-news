@@ -58,47 +58,6 @@ class crawl extends Command
      */
     public function handle()
     {
-
-        $lat = (float)52.483333333333;
-        $long = (float)13.45;
-        $point = new Point($lat, $long);
-        $result = DB::select(
-            'select entities.name,
-            ST_AsGeoJSON(geo) geoJson,
-            ST_Distance(ST_GeomFromText(\''.$point->toWKT().'\',0), geo) * 111195 distance
-            from locations
-            left join entities on entities.id = locations.entity_id 
-            WHERE ST_Distance(ST_GeomFromText(\''.$point->toWKT().'\',0), geo) * 111195 < 2000
-            order by distance
-            '
-        );
-        dd($result);
-
-        $locations = Location::distance('geo', $point, 2)->get();
-        dd($locations);
-
-        $ids = [3,7,10,42,44,48,49,50,53,54,64,66,68,71,74,88,109,111,139,145,146,147,152,153,154,158,159,160,161,163,166,182,184,185,187,205,213,218,223,225,228,233,237,238,243,250];
-
-        foreach($ids as $id) {
-            $entity = Entity::find($id);
-            event(new PlaceEntered($entity));
-        }
-
-        // select ST_Distance(ST_GeomFromText('POINT(13.45 52.483333333333)',0),location) as distance from geo_tests order by distance;
-        $first = GeoTest::first();
-        dd($first->location);
-
-        $locations = Location::all();
-        foreach($locations as $location) {
-            /** @var Location $location */
-            $point = new Point($location->latitude, $location->longitude);
-            $geo = new GeoTest();
-            $geo->location = $point;
-            $geo->save();
-            echo '.';
-        }
-        dd('here');
-
         $urls = [
             'https://www.tagesspiegel.de/berlin/berlin-neukoelln-neue-razzia-gegen-arabischen-clan-in-berlin/22996870.html',
             'https://leute.tagesspiegel.de/reinickendorf-5-9-2018/',

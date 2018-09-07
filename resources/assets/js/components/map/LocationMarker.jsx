@@ -10,20 +10,21 @@ export default class LocationMarker extends Component {
 
     onMouseEnter() {
         if(typeof this.props.onMouseEnter === 'function') {
-            this.props.onMouseEnter(this.props.entityId)
+            this.props.onMouseEnter([this.props.entityId])
         }
     }
 
     onMouseLeave() {
         if(typeof this.props.onMouseLeave === 'function') {
-            this.props.onMouseLeave(this.props.entityId)
+            this.props.onMouseLeave([this.props.entityId])
         }
     }
 
     render() {
         const iconProps = {}
+        const isActive = this.props.entityId && this.props.activeEntityIds.indexOf(this.props.entityId) >= 0
 
-        if(this.props.entityId && this.props.activeEntityId === this.props.entityId) {
+        if(isActive) {
             iconProps.color = 'primary'
         }
         return (
@@ -31,7 +32,10 @@ export default class LocationMarker extends Component {
                 onMouseEnter={this.onMouseEnter.bind(this)}
                 onMouseLeave={this.onMouseLeave.bind(this)}
             >
-                <Tooltip title={this.props.title}>
+                <Tooltip
+                    title={this.props.title}
+                    open={isActive}
+                >
                     <IconButton>
                         <ModeComment
                             {...iconProps}
@@ -49,5 +53,5 @@ LocationMarker.propTypes = {
     entityId: PropTypes.number,
     onMouseEnter: PropTypes.func,
     onMouseLeave: PropTypes.func,
-    activeEntityId: PropTypes.number,
+    activeEntityIds: PropTypes.arrayOf(PropTypes.number),
 }

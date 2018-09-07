@@ -1,6 +1,7 @@
 # TODO
 * api
     * articles for entity?
+    * radialToMeters seems wrong
     * json middleware (json error for json response)
 * react frontend
     * google map component
@@ -11,6 +12,7 @@
     * add/remove subscribed twitter accounts
     * add new url
 * docker
+    * storage/cahce writeable
     * clean production image
     * run queue on startup
         * make events queue

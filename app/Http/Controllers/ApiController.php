@@ -36,13 +36,20 @@ class ApiController extends Controller
 
         $result = [];
         foreach($articles as $article) {
+            $locationData = [
+                'geo' => $locations[$article->entity_id]->geo,
+                'entity' => $this->serializeEntity($entities[$article->entity_id]),
+                'confidence' => $article->confidence
+            ];
+            if(isset($result[$article->id])) {
+                $result[$article->id]['locations'][] = $locationData;
+                continue;
+            }
             $data = [
                 'title' => $article->title,
                 'id' => $article->id,
-                'location' => [
-                    'geo' => $locations[$article->entity_id]->geo,
-                    'entity' => $this->serializeEntity($entities[$article->entity_id]),
-                    'confidence' => $article->confidence
+                'locations' => [
+                    $locationData
                 ],
                 'source' => $article->source->toArray(),
                 'image' => $article->image,
@@ -51,9 +58,9 @@ class ApiController extends Controller
                 'description' => $article->description,
             ];
 
-            $result[] = $data;
+            $result[$article->id] = $data;
         }
-        return new JsonResponse($result);
+        return new JsonResponse(array_values($result));
     }
 
     /**

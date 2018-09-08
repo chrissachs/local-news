@@ -15,5 +15,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('test', 'WebController@test');
+Route::get('/', 'WebController@test');
+
+// TODO: to api.php
 Route::get('news/geo', 'ApiController@geoNews');

@@ -13,7 +13,7 @@ class ResolveLocation extends Command
      *
      * @var string
      */
-    protected $signature = 'extract:location {url}';
+    protected $signature = 'extract:location {articleId}';
 
     /**
      * The console command description.
@@ -39,8 +39,7 @@ class ResolveLocation extends Command
      */
     public function handle()
     {
-
-        event(new PlaceEntered(Entity::find(3)));
+        event(new PlaceEntered(Entity::find((int)$this->argument('articleId'))));
     }
 
 }

@@ -147,8 +147,6 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
 
-        Enqueue\LaravelQueue\EnqueueServiceProvider::class,
-
         /*
          * Package Service Providers...
          */

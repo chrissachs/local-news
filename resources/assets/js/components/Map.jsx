@@ -1,10 +1,31 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import CircularProgress from '@material-ui/core/CircularProgress'
-import Grid from '@material-ui/core/Grid'
 import ArticleSidebar from './sidebar/ArticleSidebar'
 import GoogleMapReact from 'google-map-react'
 import LocationMarker from './map/LocationMarker'
+import InfoBar from './InfoBar'
+
+const styles = {
+    sidebar: {
+        width:'25vw',
+        position:'fixed',
+        top:0,
+        right:0,
+        paddingRight:'3vw',
+        paddingTop:'64px',
+        zIndex: 20,
+        height: '90vh',
+        overflowY:'scroll'
+    },
+    map: {
+        position:'fixed',
+        top:0,
+        left:0,
+        height:'100%',
+        width:'100vw'
+    },
+}
 
 export default class Map extends Component {
     constructor(props) {
@@ -82,34 +103,43 @@ export default class Map extends Component {
         const leaveLocation = this.leaveLocation.bind(this)
 
         return (
-            <Grid container spacing={24} style={{height: '95vh', width: '100%'}}>
-                <Grid item xs={9}>
-                    <GoogleMapReact
-                        bootstrapURLKeys={{ key: this.props.apiKey }}
-                        defaultCenter={this.props.center}
-                        defaultZoom={this.props.zoom}
-                        style={{position:'fixed', top:0, left:0, height:'100vh', width:'73vw'}}
+            <div id={'wrapper'} style={{display:'flex'}}>
+                <InfoBar/>
+                <div style={{width:'100vw'}}>
+                        <GoogleMapReact
+                            bootstrapURLKeys={{ key: this.props.apiKey }}
+                            defaultCenter={this.props.center}
+                            defaultZoom={this.props.zoom}
+                            style={styles.map}
 
-                    >
-                        {!this.state.isLoading &&
-                        this.showLocationMarkers()
+                        >
+                            {!this.state.isLoading &&
+                            this.showLocationMarkers()
+                            }
+                        </GoogleMapReact>
+                </div>
+                <div style={styles.sidebar}>
+                        {this.state.isLoading ?
+                            (<CircularProgress size={50} />) :
+                            [
+                                <ArticleSidebar
+                                    articles={this.state.data}
+                                    hoverLocation={hoverLocation}
+                                    leaveLocation={leaveLocation}
+                                    activeEntityIds={this.state.activeEntityIds}
+                                />,
+                                <ArticleSidebar // TODO
+                                    articles={this.state.data}
+                                    hoverLocation={hoverLocation}
+                                    leaveLocation={leaveLocation}
+                                    activeEntityIds={this.state.activeEntityIds}
+                                />
+
+
+                            ]
                         }
-                    </GoogleMapReact>
-
-                </Grid>
-
-                <Grid item xs={3}>
-                    {this.state.isLoading ?
-                        (<CircularProgress size={50} />) :
-                        <ArticleSidebar
-                            articles={this.state.data}
-                            hoverLocation={hoverLocation}
-                            leaveLocation={leaveLocation}
-                            activeEntityIds={this.state.activeEntityIds}
-                        />
-                    }
-                </Grid>
-            </Grid>
+                </div>
+            </div>
         );
     }
 }

@@ -30,7 +30,6 @@ export default class ArticleSidebar extends Component {
             const intersect = locationIds.filter((id) => {
                 return activeEntityIds.indexOf(id) >= 0
             })
-            console.log(intersect)
             const highlight = intersect.length > 0
             return (
                 <Article

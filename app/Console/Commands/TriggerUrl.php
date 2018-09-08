@@ -12,7 +12,7 @@ class TriggerUrl extends Command
      *
      * @var string
      */
-    protected $signature = 'trigger:url {url}';
+    protected $signature = 'trigger:url {--u|url= : URL to add into database} {--f|file= : Text file, with one URL per row to add}';
 
     /**
      * The console command description.
@@ -38,6 +38,32 @@ class TriggerUrl extends Command
      */
     public function handle()
     {
-        event(new UrlDiscovered($this->argument('url')));
+        $url = $this->option('url');
+        $file = $this->option('file');
+        if(empty($url) && empty($file)) {
+            throw new \InvalidArgumentException('neither URL, nor FILE was provided, see help');
+        }
+        if(!empty($url)) {
+            $this->triggerUrl($url);
+        }
+
+        if(!empty($file)) {
+            $this->loadFromFile($file);
+        }
+    }
+
+    private function loadFromFile(string $path): void {
+        if(!file_exists($path)) {
+            throw new \InvalidArgumentException('file not found');
+        }
+        $handle = fopen($path,'r');
+        while($line = fgets($handle)) {
+            $this->triggerUrl($line);
+        }
+    }
+
+    private function triggerUrl(string $url): void {
+        $url = trim($url);
+        event(new UrlDiscovered($url));
     }
 }

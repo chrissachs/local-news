@@ -1,60 +1,72 @@
-<p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
+# Intro
+This is a demo app to show how Laravel and ReactJS can be utilized for runnig an web app.
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+The app discovers news, tries to localize them, and displays them on a map.
 
-## About Laravel
+# Demo
+TODO
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-Laravel is accessible, yet powerful, providing tools needed for large, robust applications.
+# Run the app locally
+## Requirements
+ * PHP 7.2
+ * MySQL >= 5.7.7
+## Config
+Copy `.env.dist` to `.env` and add the missing keys for google maps api and dandelion.
 
-## Learning Laravel
+## Deploy
+This repository comes with a (development) docker-compose.yml, to start it uo execute the following command:
+```bash
+# install dependencies
+composer install
+npm install
+# build frontend files
+npm run dev
+# build and run the app
+docker-compose up
+# make cache dir writeable
+ducker-compose exec app chmod -Rf 777 bootstrap/cache
+# create the database
+ducker-compose exec app php artisan migrate
+```
+The app should now be running at: http://0.0.0.0:8080/
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of any modern web application framework, making it a breeze to get started learning the framework.
+## Development
+### Add articles manually
 
-If you're not in the mood to read, [Laracasts](https://laracasts.com) contains over 1100 video tutorials on a range of topics including Laravel, modern PHP, unit testing, JavaScript, and more. Boost the skill level of yourself and your entire team by digging into our comprehensive video library.
+*Note: all commands need to be executed from the apps context, either by prepending `docker-compose exec app`, or login 
+once to the app if you want to run several commands: `docker-compose exec app`bash*
 
-## Laravel Sponsors
+URLs may be added manually, directly through a command line tool:
 
-We would like to extend our thanks to the following sponsors for helping fund on-going Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell):
+```bash
+# adding a single url
+php artisan trigger:url --url=https://www.tagesspiegel.de/berlin/berlin-charlottenburg-buchhandlung-hugendubel-expandiert-im-europa-center/22995324.html\
+# adding urls from a file:
+php artisan trigger:url --file=/tmp/urls.txt
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
+### Automatically discover new articles
+As almost every news site has it's own twitter account, the app uses twitter as a unified source of "live" updates for
+new articles. 
 
-## Contributing
+To start listening to updates from twitter, run:
+```bash
+php artisan twitter:consume
+```
+The accounts used can be configured inside [the command ConsumeTwitter.php](app/Console/Commands/ConsumeTwitter.php)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Entity extraction/localization
+Once an article was discovered by the app, events are triggered that start extracting information from the article and
+make them available to the frontend. To see which events exist, and what they start see
+[EventServiceProvider](app/Providers/EventServiceProvider.php]).
 
-## Security Vulnerabilities
+## Frontend
+At `resources/assets/js` the React files are located, to build a new version of the frontend files run
+```bash
+npm run dev
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# TODO
+see the [TODO.md](TODO.md) file for open tasks.

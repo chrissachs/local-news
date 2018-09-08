@@ -9,3 +9,5 @@ RUN apt-get update && apt-get install -y libmcrypt-dev \
 # curl
 # json mbstring
 # mcrypt
+
+#RUN chmod -Rf 777 /var/www/bootstrap/cache

@@ -21,6 +21,7 @@ export default class LocationMarker extends Component {
     }
 
     render() {
+        const {onClick} = this.props
         const iconProps = {}
         const isActive = this.props.entityId && this.props.activeEntityIds.indexOf(this.props.entityId) >= 0
 
@@ -31,6 +32,7 @@ export default class LocationMarker extends Component {
             <div
                 onMouseEnter={this.onMouseEnter.bind(this)}
                 onMouseLeave={this.onMouseLeave.bind(this)}
+                onClick={onClick}
             >
                 <Tooltip
                     title={this.props.title}

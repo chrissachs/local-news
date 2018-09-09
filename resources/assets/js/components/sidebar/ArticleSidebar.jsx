@@ -10,6 +10,7 @@ export default class ArticleSidebar extends Component {
             data: [],
             locations: [],
             activeEntityIds: [],
+            activeArticleId: null
         }
     }
 
@@ -22,10 +23,35 @@ export default class ArticleSidebar extends Component {
 
     }
 
+    setActiveArticle = (activeArticleId) => {
+        this.setState({activeArticleId})
+    }
+
+    getArticlesToShow() {
+        let {articles} = this.props
+        const {selectedEntityIds} = this.props
+        if(selectedEntityIds.length  === 0) {
+            return articles
+        }
+        return articles.filter((article) => {
+            let isSelected = false
+            article.locations.forEach((location) => {
+                console.log(selectedEntityIds)
+                if(!isSelected && (selectedEntityIds.indexOf(location.entity.id) >= 0)) {
+                    isSelected = true
+                }
+            })
+            return isSelected
+        })
+
+    }
+
+
 
     listItems() {
-        return this.props.articles.map((item) => {
+        return this.getArticlesToShow().map((item) => {
             const {hoverLocation, leaveLocation, activeEntityIds} = this.props
+            const {activeArticleId} = this.state
             const locationIds = ArticleSidebar.getLocationIds(item)
             const intersect = locationIds.filter((id) => {
                 return activeEntityIds.indexOf(id) >= 0
@@ -42,7 +68,9 @@ export default class ArticleSidebar extends Component {
                         leaveLocation(locationIds)
                     }
                     }
+                    setActiveArticleId={this.setActiveArticle}
                     key={item.id}
+                    activeArticleId={activeArticleId}
                     highlight={(highlight)}
                 />
             )

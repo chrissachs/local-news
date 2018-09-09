@@ -5,6 +5,7 @@ import ArticleSidebar from './sidebar/ArticleSidebar'
 import GoogleMapReact from 'google-map-react'
 import LocationMarker from './map/LocationMarker'
 import InfoBar from './InfoBar'
+import EntiyBades from './sidebar/EntityBadges'
 
 const styles = {
     sidebar: {
@@ -35,6 +36,7 @@ export default class Map extends Component {
             data: [],
             locations: [],
             activeEntityIds: [],
+            selectedEntities: []
         }
     }
 
@@ -78,6 +80,19 @@ export default class Map extends Component {
         this.setState({activeEntityIds: []})
     }
 
+    toggleEntity = (entityId) => {
+        const {selectedEntities} = this.state
+
+        const index = selectedEntities.indexOf(entityId)
+        if(index >= 0) {
+             selectedEntities.splice(index,1)
+        } else {
+            selectedEntities.push(entityId)
+        }
+
+        this.setState({selectedEntities})
+    }
+
     showLocationMarkers() {
         const {locations, activeEntityIds} = this.state
         const hoverLocation = this.hoverLocation.bind(this)
@@ -93,8 +108,19 @@ export default class Map extends Component {
                     onMouseEnter={hoverLocation}
                     onMouseLeave={leaveLocation}
                     activeEntityIds={activeEntityIds}
+                    onClick={() => this.toggleEntity(location.entity.id)}
                 />
             )
+        })
+    }
+
+    getSelectedEntities() {
+        const {selectedEntities} = this.state
+        const locationEntities = this.state.locations.map((location) => {
+            return location.entity
+        })
+        return locationEntities.filter((entity) => {
+            return selectedEntities.indexOf(entity.id) >= 0
         })
     }
 
@@ -122,12 +148,20 @@ export default class Map extends Component {
                         {this.state.isLoading ?
                             (<CircularProgress size={50} />) :
                             (
+                                <div>
+
+                                <EntiyBades
+                                    entities={this.getSelectedEntities()}
+                                    onDelete={this.toggleEntity}
+                                />
                                 <ArticleSidebar
                                     articles={this.state.data}
                                     hoverLocation={hoverLocation}
                                     leaveLocation={leaveLocation}
                                     activeEntityIds={this.state.activeEntityIds}
+                                    selectedEntityIds={this.state.selectedEntities}
                                 />
+                                </div>
                             )
                         }
                 </div>

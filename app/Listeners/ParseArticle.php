@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Events\ArticleParsed;
 use App\Events\UrlDiscovered;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Psr\Log\LoggerInterface;
 use App\Article;
 use App\Source;
@@ -11,7 +12,7 @@ use Goose\Article as GooseArticle;
 use Goose\Client as GooseClient;
 use Readability\Readability;
 
-class ParseArticle
+class ParseArticle implements ShouldQueue
 {
     /** @var LoggerInterface */
     private $logger;
@@ -41,7 +42,12 @@ class ParseArticle
         $this->logger->info('received url '.$url);
 
         $goose = new GooseClient();
-        $parsedArticle = $goose->extractContent($url);
+        try {
+            $parsedArticle = $goose->extractContent($url);
+        } catch (\Exception $exception) {
+            $this->logger->error('could not load url: '.$url.', '.$exception->getMessage());
+            return;
+        }
         if($this->doesArticleExist($parsedArticle->getCanonicalLink())) {
             $this->logger->info('article with url "'.$parsedArticle->getCanonicalLink().'" already known, will ignore it');
             return;

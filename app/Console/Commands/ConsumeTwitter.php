@@ -30,12 +30,18 @@ class ConsumeTwitter extends Command
         'twitter.com'
     ];
 
+    private $writeTweetsToDisk = false;
+
     private $tempFile = '/tmp/tweets.json';
     /** @var LoggerInterface */
     private $logger;
 
     public function __construct(LoggerInterface $logger) {
         $this->logger = $logger;
+        $debugModes = ['dev', 'local'];
+        if(\in_array(env('APP_ENV'), $debugModes, true)) {
+            $this->writeTweetsToDisk = true;
+        }
         parent::__construct();
     }
 
@@ -44,8 +50,12 @@ class ConsumeTwitter extends Command
         if($this->option('replay') > 0) {
             $this->replay();
         }
-        if($this->option('consume') > 0) {
-            $this->openSocket();
+        try {
+            if($this->option('consume') > 0) {
+                $this->openSocket();
+            }
+        } catch (\Exception $e) {
+            $this->logger->error('consume twitter stopped with exception: '.$e->getMessage());
         }
     }
 
@@ -66,14 +76,19 @@ class ConsumeTwitter extends Command
         );
         $stream->whenTweets($toFollow, function(array $tweet) {
             $this->handleTweet($tweet);
-            // TODO
-            file_put_contents($this->tempFile, json_encode($tweet).PHP_EOL.PHP_EOL, FILE_APPEND);
+            if($this->writeTweetsToDisk) {
+                file_put_contents(
+                    $this->tempFile,
+                    \json_encode($tweet).PHP_EOL.PHP_EOL,
+                    FILE_APPEND
+                );
+            }
         })->startListening();
 
     }
 
     private function handleTweet(array $tweet) {
-        echo '.';
+        $this->logger->debug('handle tweet '.json_encode($tweet));
         $this->searchUrl($tweet);
         if(isset($tweet['retweeted_status']['extended_tweet'])) { // TODO: retweets?
             $this->searchUrl($tweet['retweeted_status']['extended_tweet']);
@@ -89,7 +104,8 @@ class ConsumeTwitter extends Command
             if(isset($urlData['expanded_url'])) {
                 $url = $urlData['expanded_url'];
                 $parts = parse_url($url);
-                if(isset($parts['host']) && !in_array($parts['host'], $this->blacklistedHosts, true)) {
+                if(isset($parts['host']) && !\in_array($parts['host'], $this->blacklistedHosts, true)) {
+                    $this->logger->debug('queue url '.$url);
                     event(new UrlDiscovered($url));
                 } else {
                     $this->logger->info('ignore url '.$url);

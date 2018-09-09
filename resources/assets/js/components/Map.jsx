@@ -121,22 +121,14 @@ export default class Map extends Component {
                 <div style={styles.sidebar}>
                         {this.state.isLoading ?
                             (<CircularProgress size={50} />) :
-                            [
+                            (
                                 <ArticleSidebar
                                     articles={this.state.data}
                                     hoverLocation={hoverLocation}
                                     leaveLocation={leaveLocation}
                                     activeEntityIds={this.state.activeEntityIds}
-                                />,
-                                <ArticleSidebar // TODO
-                                    articles={this.state.data}
-                                    hoverLocation={hoverLocation}
-                                    leaveLocation={leaveLocation}
-                                    activeEntityIds={this.state.activeEntityIds}
                                 />
-
-
-                            ]
+                            )
                         }
                 </div>
             </div>

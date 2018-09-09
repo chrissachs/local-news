@@ -7,9 +7,10 @@ use App\Location;
 use App\Service\CachingGuzzle;
 use Grimzy\LaravelMysqlSpatial\Types\Point;
 use function GuzzleHttp\Psr7\parse_query;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Psr\Log\LoggerInterface;
 
-class GeoResolveWikipedia {
+class GeoResolveWikipedia implements ShouldQueue {
     /** @var CachingGuzzle */
     private $guzzleClient;
     /** @var LoggerInterface */
@@ -68,8 +69,12 @@ class GeoResolveWikipedia {
                 'prop' => 'extlinks',
             ]);
 
-        $guzzle = new CachingGuzzle();
-        $data = $guzzle->getJson($url);
+        try {
+            $data = $this->guzzleClient->getJson($url);
+        } catch (\Exception $exception) {
+            $this->logger->error('error while loading wiki data for '.$title.': '.$exception->getMessage());
+            return null;
+        }
         foreach($data['query']['pages'] ?? [] as $place) {
             if(!isset($place['extlinks'])) {
                 continue;

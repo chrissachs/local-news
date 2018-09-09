@@ -8,8 +8,6 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import LinkButton from './about/LinkButton'
 
 export default (props) => {
-    console.log('ad', props)
-
     const handleClose = () => {
         props.onClose()
     }

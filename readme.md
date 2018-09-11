@@ -4,7 +4,7 @@ This is a demo app to show how Laravel and ReactJS can be utilized for runnig an
 The app discovers news, tries to localize them, and displays them on a map.
 
 # Demo
-TODO
+https://local-news.chris-sachs.info/
 
 
 
@@ -25,8 +25,6 @@ npm install
 npm run dev
 # build and run the app
 docker-compose up
-# make cache dir writeable
-ducker-compose exec app chmod -Rf 777 bootstrap/cache
 # create the database
 ducker-compose exec app php artisan migrate
 ```
@@ -53,7 +51,7 @@ new articles.
 
 To start listening to updates from twitter, run:
 ```bash
-php artisan twitter:consume
+php artisan consume:twitter
 ```
 The accounts used can be configured inside [the command ConsumeTwitter.php](app/Console/Commands/ConsumeTwitter.php)
 
@@ -63,7 +61,7 @@ make them available to the frontend. To see which events exist, and what they st
 [EventServiceProvider](app/Providers/EventServiceProvider.php]).
 
 ## Frontend
-At `resources/assets/js` the React files are located, to build a new version of the frontend files run
+At [resources/assets/js](resources/assets/js) the React files are located, to build a new version of the frontend files run
 ```bash
 npm run dev
 ```

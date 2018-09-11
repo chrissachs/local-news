@@ -25,9 +25,6 @@ use Grimzy\LaravelMysqlSpatial\Eloquent\SpatialTrait;
 class Location extends Model {
     use SpatialTrait;
 
-    // https://stackoverflow.com/questions/46926283/convert-st-distance-result-to-kilometers-or-meters
-    private const CIRLE_DEFREE_TO_METER_MULTIPLIER = 111195;
-
     protected $spatialFields = [
         'geo',
     ];
@@ -37,6 +34,6 @@ class Location extends Model {
     }
 
     public static function withinMetersOfPoint(int $meters, Point $point) {
-        return self::distance('geo', $point, $meters/self::CIRLE_DEFREE_TO_METER_MULTIPLIER);
+        return self::distanceSphere('geo', $point, $meters);
     }
 }

@@ -17,7 +17,11 @@ class ApiController extends Controller
         $latitude = $request->get('latitude');
         $longitude = $request->get('longitude');
         $maxDistanceInMeters= (int)$request->get('distance', 2000);
-        // TODO: max distance?
+
+        $distanceLimit = 60000;
+        if($maxDistanceInMeters > $distanceLimit) {
+            throw new BadRequestHttpException('max distance exceeded');
+        }
         if(!isset($latitude, $longitude)) {
             // TODO: handle json errors
             throw new BadRequestHttpException('longitude and latitude need to be defined');
@@ -101,6 +105,7 @@ class ApiController extends Controller
             ::join('article_entities', 'article_entities.article_id', '=', 'articles.id')
             ->whereIn('entity_id', $entityIds)
             ->where('confidence', '>=', $minConfidence)
+            ->take(30)
             ->orderBy('articles.id', 'DESC')
             ->with('source')
             ->select(['articles.*', 'article_entities.entity_id', 'article_entities.confidence'])

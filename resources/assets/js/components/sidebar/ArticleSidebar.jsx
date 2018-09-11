@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Article from './Article'
+import NoResultCard from './NoResultCard'
 
 export default class ArticleSidebar extends Component {
     constructor(props) {
@@ -36,7 +37,6 @@ export default class ArticleSidebar extends Component {
         return articles.filter((article) => {
             let isSelected = false
             article.locations.forEach((location) => {
-                console.log(selectedEntityIds)
                 if(!isSelected && (selectedEntityIds.indexOf(location.entity.id) >= 0)) {
                     isSelected = true
                 }
@@ -49,7 +49,13 @@ export default class ArticleSidebar extends Component {
 
 
     listItems() {
-        return this.getArticlesToShow().map((item) => {
+        const articles = this.getArticlesToShow()
+        if(!this.props.loading && articles.length === 0) {
+            return (
+                <NoResultCard/>
+            )
+        }
+        return articles.map((item) => {
             const {hoverLocation, leaveLocation, activeEntityIds} = this.props
             const {activeArticleId} = this.state
             const locationIds = ArticleSidebar.getLocationIds(item)
@@ -86,5 +92,6 @@ ArticleSidebar.propTypes = {
     hoverLocation: PropTypes.func.isRequired,
     leaveLocation: PropTypes.func.isRequired,
     activeEntityIds: PropTypes.arrayOf(PropTypes.number).isRequired,
+    loading: PropTypes.bool.isRequired,
 
 }

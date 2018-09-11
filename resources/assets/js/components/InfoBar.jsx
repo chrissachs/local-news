@@ -9,39 +9,50 @@ import Menu from '@material-ui/core/Menu'
 import MenuIcon from '@material-ui/icons/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import AboutDialog from './AboutDialog'
+import Imprint from './about/Imprint'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 export default class InfoBar extends Component {
     constructor(props) {
         super(props)
         this.state = {
             anchorEl: null,
-            aboutDialogOpen: false
+            aboutDialogOpen: false,
+            imprintOpen: false,
         }
     }
 
     toggleMenu = event => {
-        console.log('open')
         this.setState({anchorEl: event.currentTarget})
     }
 
-    handleClose = () => {
-        console.log(this)
-        console.log('clos')
+    closeMenu = () => {
         this.setState({ anchorEl: null })
     }
 
 
     openAbout = () => {
         this.setState({aboutDialogOpen: true})
-        this.handleClose()
+        this.closeMenu()
     }
 
     closeAbout = () => {
         this.setState({aboutDialogOpen: false})
     }
 
+    openImprint = () => {
+        this.setState({imprintOpen: true})
+        this.closeMenu()
+    }
+
+    closeImprint = () => {
+        this.setState({imprintOpen: false})
+    }
+
+
     render() {
-        const {anchorEl, aboutDialogOpen} = this.state
+        const {anchorEl, aboutDialogOpen, imprintOpen} = this.state
+        const {loading} = this.props
         const open = Boolean(anchorEl)
         return (
             <AppBar position="static" style={{zIndex:2049}}>
@@ -58,20 +69,31 @@ export default class InfoBar extends Component {
                         id="menu-appbar"
                         anchorEl={anchorEl}
                         open={open}
-                        onClose={this.handleClose}
+                        onClose={this.closeMenu}
                         style={{zIndex: 2050}}
                     >
                         <MenuItem onClick={this.openAbout}>Info</MenuItem>
-                        <MenuItem onClick={this.handleClose}>Impressum</MenuItem>
+                        <MenuItem onClick={this.openImprint}>Impressum</MenuItem>
                     </Menu>
-                    <Typography variant="title" color="inherit">
+                    <Typography variant="title" color="inherit" style={{flexGrow:1}}>
                         Local news
                     </Typography>
+                    {loading && (
+                        <CircularProgress
+                            size={20}
+                            thickness={5}
+                            color={"secondary"}
+                        />)
+                    }
                 </Toolbar>
                 <AboutDialog
                     onClose={this.closeAbout}
                     open={aboutDialogOpen}
                 />
+                <Imprint
+                    onClose={this.closeImprint}
+                    open={imprintOpen}
+                    />
             </AppBar>
 
         )

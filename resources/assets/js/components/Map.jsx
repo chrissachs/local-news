@@ -1,19 +1,20 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import CircularProgress from '@material-ui/core/CircularProgress'
 import ArticleSidebar from './sidebar/ArticleSidebar'
 import GoogleMapReact from 'google-map-react'
 import LocationMarker from './map/LocationMarker'
 import InfoBar from './InfoBar'
 import EntiyBades from './sidebar/EntityBadges'
+import calculateDistance from './geo/distance'
+import debounce from 'lodash.debounce'
 
 const styles = {
     sidebar: {
-        width:'25vw',
+        width:'22vw',
         position:'fixed',
         top:0,
         right:0,
-        paddingRight:'3vw',
+        paddingRight:'0',
         paddingTop:'64px',
         zIndex: 20,
         height: '90vh',
@@ -41,9 +42,14 @@ export default class Map extends Component {
     }
 
     componentDidMount() {
+        //const {center} = this.props
+        //this.getArticles(center, 10000)
+    }
+
+    getArticles(center, distance) {
         this.setState({isLoading: true})
         window.axios
-            .get('news/geo?longitude='+ this.props.center.lng+'&latitude='+ this.props.center.lat+'&distance=10000')
+            .get('news/geo?longitude='+ center.lng+'&latitude='+ center.lat+'&distance='+distance)
             .then((response) => {
                 let {data} = response
                 this.setState({
@@ -53,6 +59,7 @@ export default class Map extends Component {
 
                 })
             })
+
     }
 
     static getUniqueLocationsFromResponse(data) {
@@ -124,46 +131,49 @@ export default class Map extends Component {
         })
     }
 
+    onMapViewChange = debounce((data) => {
+        const {center} = data
+        const distance = calculateDistance(data.center, data.bounds.nw)
+        this.getArticles(center, distance)
+    },200)
+
     render() {
         const hoverLocation = this.hoverLocation.bind(this)
         const leaveLocation = this.leaveLocation.bind(this)
 
+
+
         return (
             <div id={'wrapper'} style={{display:'flex'}}>
-                <InfoBar/>
-                <div style={{width:'100vw'}}>
+                <InfoBar
+                    loading={this.state.isLoading}
+                />
+                <div style={{width:'97vw'}}>
                         <GoogleMapReact
                             bootstrapURLKeys={{ key: this.props.apiKey }}
                             defaultCenter={this.props.center}
                             defaultZoom={this.props.zoom}
                             style={styles.map}
+                            onChange={this.onMapViewChange }
+                            options={{minZoom:12}}
 
                         >
-                            {!this.state.isLoading &&
-                            this.showLocationMarkers()
-                            }
+                            {this.showLocationMarkers()}
                         </GoogleMapReact>
                 </div>
                 <div style={styles.sidebar}>
-                        {this.state.isLoading ?
-                            (<CircularProgress size={50} />) :
-                            (
-                                <div>
-
-                                <EntiyBades
-                                    entities={this.getSelectedEntities()}
-                                    onDelete={this.toggleEntity}
-                                />
-                                <ArticleSidebar
-                                    articles={this.state.data}
-                                    hoverLocation={hoverLocation}
-                                    leaveLocation={leaveLocation}
-                                    activeEntityIds={this.state.activeEntityIds}
-                                    selectedEntityIds={this.state.selectedEntities}
-                                />
-                                </div>
-                            )
-                        }
+                        <EntiyBades
+                            entities={this.getSelectedEntities()}
+                            onDelete={this.toggleEntity}
+                        />
+                        <ArticleSidebar
+                            articles={this.state.data}
+                            hoverLocation={hoverLocation}
+                            leaveLocation={leaveLocation}
+                            activeEntityIds={this.state.activeEntityIds}
+                            selectedEntityIds={this.state.selectedEntities}
+                            loading={this.state.isLoading}
+                        />
                 </div>
             </div>
         );
@@ -171,10 +181,10 @@ export default class Map extends Component {
 }
 Map.defaultProps = { // TODO
     center: {
-        lat: 52.494965,
-        lng: 13.470839
+        lat: 52.520008,
+        lng: 13.404954
     },
-    zoom: 11,
+    zoom: 14,
     apiKey: window.googleApiKey
 }
 

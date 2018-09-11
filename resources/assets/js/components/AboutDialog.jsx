@@ -16,14 +16,13 @@ export default (props) => {
     return (
         <Dialog
             open={open}
-            onClose={handleClose}
+            onClose={this.handleClose}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
         >
             <DialogTitle id="alert-dialog-title">Wo bin ich hier gelandet?</DialogTitle>
             <DialogContent>
                 <DialogContentText id="alert-dialog-description">
-                    {/** TODO: links */}
                     Eine kleine Demo App, die das Zusammenspiel von
                     <LinkButton url='https://laravel.com/' text='Laravel' />,
                     <LinkButton url="https://reactjs.org/" text="ReactJS"/>

@@ -1,59 +1,43 @@
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
+import shapes from '../../utils/shapes'
 import ModeComment from '@material-ui/icons/ModeComment'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
-export default class LocationMarker extends Component {
-    constructor(props) {
-        super(props)
+const LocationMarker = ({location, activeEntityIds, toggleLocationActive, toggleLocationSelect}) => {
+    const {entity} = location
+    const iconProps = {color: 'primary'}
+    const isActive = entity.id && activeEntityIds.indexOf(entity.id) >= 0
+
+    if(isActive) {
+        iconProps.color = 'secondary'
     }
-
-    onMouseEnter() {
-        if(typeof this.props.onMouseEnter === 'function') {
-            this.props.onMouseEnter([this.props.entityId])
-        }
-    }
-
-    onMouseLeave() {
-        if(typeof this.props.onMouseLeave === 'function') {
-            this.props.onMouseLeave([this.props.entityId])
-        }
-    }
-
-    render() {
-        const {onClick} = this.props
-        const iconProps = {}
-        const isActive = this.props.entityId && this.props.activeEntityIds.indexOf(this.props.entityId) >= 0
-
-        if(isActive) {
-            iconProps.color = 'primary'
-        }
-        return (
-            <div
-                onMouseEnter={this.onMouseEnter.bind(this)}
-                onMouseLeave={this.onMouseLeave.bind(this)}
-                onClick={onClick}
+    return (
+        <div
+            onMouseEnter={() => {toggleLocationActive([entity.id])}}
+            onMouseLeave={() => {toggleLocationActive(null)}}
+            onClick={() => toggleLocationSelect(entity.id)}
+        >
+            <Tooltip
+                title={entity.name}
+                open={isActive}
             >
-                <Tooltip
-                    title={this.props.title}
-                    open={isActive}
-                >
-                    <IconButton>
-                        <ModeComment
-                            {...iconProps}
-                        />
-                    </IconButton>
-                </Tooltip>
-            </div>
+                <IconButton>
+                    <ModeComment
+                        {...iconProps}
+                    />
+                </IconButton>
+            </Tooltip>
+        </div>
 
-        )
-    }
+    )
 }
 
 LocationMarker.propTypes = {
-    title: PropTypes.string.isRequired,
-    entityId: PropTypes.number,
-    onMouseEnter: PropTypes.func,
-    onMouseLeave: PropTypes.func,
+    location: shapes.location.isRequired,
+    toggleLocationActive: PropTypes.func.isRequired,
+    toggleLocationSelect: PropTypes.func.isRequired,
     activeEntityIds: PropTypes.arrayOf(PropTypes.number),
 }
+
+export default LocationMarker

@@ -15,9 +15,8 @@
 
 </head>
 <body>
-<div id="map">
-    <i class="fa fa-spin fa-spinner"></i>
+<div id="root">
 </div>
-<script src="{{mix('js/app.js')}}" ></script>
+<script src="{{mix('js/index.js')}}" ></script>
 </body>
 </html>

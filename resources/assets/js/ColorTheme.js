@@ -1,9 +1,17 @@
-import {createMuiTheme} from "@material-ui/core/styles/index";
+import React from 'react'
+import {createMuiTheme, MuiThemeProvider} from "@material-ui/core/styles/index";
 
-const ColorTheme = createMuiTheme({
+export const ColorTheme = createMuiTheme({
     palette: {
         primary: {main: '#008394'},
-        secondary: {main: '#f44336'},
+        secondary: {main: '#ff9505'},
     },
 })
-export default ColorTheme
+
+export default ({children}) => {
+    return (
+        <MuiThemeProvider theme={ColorTheme}>
+            {children}
+        </MuiThemeProvider>
+    )
+}

@@ -1,22 +1,18 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
-import LinkButton from './about/LinkButton'
+import LinkButton from './LinkButton'
 
-export default (props) => {
-    const handleClose = () => {
-        props.onClose()
-    }
-
-    const {open} = props
+const AboutDialog = ({onClose, open}) => {
     return (
         <Dialog
             open={open}
-            onClose={this.handleClose}
+            onClose={onClose}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
         >
@@ -24,14 +20,14 @@ export default (props) => {
             <DialogContent>
                 <DialogContentText id="alert-dialog-description">
                     Eine kleine Demo App, die das Zusammenspiel von
-                    <LinkButton url='https://laravel.com/' text='Laravel' />,
-                    <LinkButton url="https://reactjs.org/" text="ReactJS"/>
+                    <LinkButton url='https://laravel.com/'>Laravel</LinkButton>,
+                    <LinkButton url="https://reactjs.org/">ReactJS</LinkButton>
                     demonstrieren soll.<br/>
 
                     Die App sucht nach Artikeln auf Twitter, versucht mit Hilfe von
-                    <LinkButton url="https://dandelion.eu/" text="Dandelion"/>,
-                    <LinkButton url="https://cloud.google.com/maps-platform/?hl=de" text="GoogleMaps"/> und
-                    <LinkButton url="https://de.wikipedia.org/wiki/Wikipedia:Technik/Labs/Tools/geohack" text="Wikipedia"/>
+                    <LinkButton url="https://dandelion.eu/">Dandelion</LinkButton>,
+                    <LinkButton url="https://cloud.google.com/maps-platform/?hl=de">GoogleMaps</LinkButton> und
+                    <LinkButton url="https://de.wikipedia.org/wiki/Wikipedia:Technik/Labs/Tools/geohack">Wikipedia</LinkButton>
 
                     herauszufinden, um welchen Ort es in der News geht, und zeigt es dann entsprechend auf der Karte an.
 
@@ -41,10 +37,7 @@ export default (props) => {
             <DialogContent>
                 <DialogContentText id="alert-dialog-description">
                     Der Source Code kann auf
-                    <LinkButton
-                        url='https://github.com/chrissachs/local-news'
-                        text='GitHub'
-                    />
+                    <LinkButton url='https://github.com/chrissachs/local-news'>GitHub</LinkButton>
                     angeschaut werden.
 
 
@@ -54,23 +47,25 @@ export default (props) => {
             <DialogContent>
                 <DialogContentText id="alert-dialog-description">
                     Mehr Infos über mich gibt es auf
-                    <LinkButton
-                        url='https://chris-sachs.info'
-                        text='meiner Seite'
-                    /> oder bei
-                    <LinkButton
-                        url='https://www.linkedin.com/in/chris-sachs-6899b498/'
-                        text='LinkedIn'
-                    />.
+                    <LinkButton url='https://chris-sachs.info'>meiner Seite</LinkButton>
+                        oder bei
+                    <LinkButton url='https://www.linkedin.com/in/chris-sachs-6899b498/'>LinkedIn</LinkButton>.
 
 
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose} color="primary" autoFocus>
+                <Button onClick={onClose} color="primary" autoFocus>
                     OK, Danke
                 </Button>
             </DialogActions>
         </Dialog>
     )
 }
+
+AboutDialog.propTypes = {
+    onClose: PropTypes.func.isRequired,
+    open: PropTypes.bool.isRequired,
+}
+
+export default AboutDialog

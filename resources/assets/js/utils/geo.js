@@ -1,5 +1,5 @@
 //https://www.geodatasource.com/developers/javascript
-export default (a, b) => {
+export const distance = (a, b) => {
     const radlat1 = Math.PI * a.lat/180
     const radlat2 = Math.PI * b.lat/180
     const theta = a.lng-b.lng

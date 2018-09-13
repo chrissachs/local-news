@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import shapes from '../../utils/shapes'
 import Article from './Article'
 import NoResultCard from './NoResultCard'
 
@@ -7,10 +8,6 @@ export default class ArticleSidebar extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            isLoading: true,
-            data: [],
-            locations: [],
-            activeEntityIds: [],
             activeArticleId: null
         }
     }
@@ -21,7 +18,6 @@ export default class ArticleSidebar extends Component {
             locationIds.push(location.entity.id)
         })
         return locationIds
-
     }
 
     setActiveArticle = (activeArticleId) => {
@@ -43,20 +39,15 @@ export default class ArticleSidebar extends Component {
             })
             return isSelected
         })
-
     }
-
-
 
     listItems() {
         const articles = this.getArticlesToShow()
         if(!this.props.loading && articles.length === 0) {
-            return (
-                <NoResultCard/>
-            )
+            return (<NoResultCard/>)
         }
         return articles.map((item) => {
-            const {hoverLocation, leaveLocation, activeEntityIds} = this.props
+            const {activeEntityIds, toggleActiveLocations} = this.props
             const {activeArticleId} = this.state
             const locationIds = ArticleSidebar.getLocationIds(item)
             const intersect = locationIds.filter((id) => {
@@ -67,17 +58,12 @@ export default class ArticleSidebar extends Component {
                 <Article
                     item={item}
                     style={{marginBottom:'1rem'}}
-                    onMouseOver={() => {
-                        hoverLocation(locationIds)
-                    }}
-                    onMouseOut={() => {
-                        leaveLocation(locationIds)
-                    }
-                    }
+                    onMouseOver={() => {toggleActiveLocations(locationIds)}}
+                    onMouseOut={() => {toggleActiveLocations([])}}
                     setActiveArticleId={this.setActiveArticle}
                     key={item.id}
                     activeArticleId={activeArticleId}
-                    highlight={(highlight)}
+                    highlight={highlight}
                 />
             )
         })
@@ -88,10 +74,8 @@ export default class ArticleSidebar extends Component {
     }
 }
 ArticleSidebar.propTypes = {
-    articles: PropTypes.arrayOf(PropTypes.object).isRequired,
-    hoverLocation: PropTypes.func.isRequired,
-    leaveLocation: PropTypes.func.isRequired,
+    articles: PropTypes.arrayOf(shapes.article).isRequired,
+    toggleActiveLocations: PropTypes.func.isRequired,
     activeEntityIds: PropTypes.arrayOf(PropTypes.number).isRequired,
     loading: PropTypes.bool.isRequired,
-
 }
